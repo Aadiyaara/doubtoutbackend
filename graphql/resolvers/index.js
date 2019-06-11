@@ -210,7 +210,7 @@ module.exports = {
                 email: args.studentInput.email,
                 password: hashedPassword,
                 address: args.studentInput.address,
-                phone: args.studentInput.phoneNumber,
+                phoneNumber: args.studentInput.phoneNumber,
                 dateJoined: new Date().toString(),
                 dateLastLogin: new Date().toString()
             })

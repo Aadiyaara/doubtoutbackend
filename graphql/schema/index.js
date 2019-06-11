@@ -6,6 +6,8 @@ module.exports = buildSchema(`
         _id: ID!
         name: String!
         email: String!
+        address: String!
+        phoneNumber: String!
         password: String
         dateJoined: String
         dateLastLogin: String
