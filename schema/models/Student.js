@@ -30,18 +30,6 @@ const studentSchema = new Schema({
         type: String,
         required: true
     },
-    branch: {
-        type: String,
-        required: true
-    },
-    year: {
-        type: Number,
-        required: true
-    },
-    group: {
-        type: String,
-        required: true
-    },
     courses: [
         {
             type: Schema.Types.ObjectId,
