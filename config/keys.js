@@ -9,6 +9,6 @@ module.exports = {
 
     },
     mongoDB: {
-        dbURI: 'mongodb+srv://aadi:attendanceappshouldbedifferent@schoola-menvg.mongodb.net/test?retryWrites=true'
+        dbURI: 'mongodb+srv://aadi:aadi@doubtoutapp1-eapsv.mongodb.net/test?retryWrites=true&w=majority'
     }
 }

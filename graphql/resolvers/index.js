@@ -1,5 +1,5 @@
 const Student = require('../../schema/models/Student')
-const Teacher = require('../../schema/models/Tutor')
+const Teacher = require('../../schema/models/Teacher')
 const Session = require('../../schema/models/Session')
 const Course = require('../../schema/models/Course')
 
