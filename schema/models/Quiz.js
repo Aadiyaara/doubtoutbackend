@@ -6,14 +6,6 @@ const quizSchema = new Schema({
         type: String,
         required: true,
     },
-    genre: {
-        type: String,
-        required: true,
-    },
-    subject: {
-        type: String,
-        required: true,
-    },
     courses: [
         {
             type: Schema.Types.ObjectId,
@@ -38,7 +30,7 @@ const quizSchema = new Schema({
             type: String,
         }
     ],
-    sessions: [
+    quizSessions: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Session'
