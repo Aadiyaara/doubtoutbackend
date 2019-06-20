@@ -10,9 +10,10 @@ module.exports = buildSchema(`
         phoneNumber: String!
         password: String
         dateJoined: String
+        courses: [Courses!]
         dateLastLogin: String
-        lastSession: Session
-        sessions: [Session!]
+        lastSession: DoubtSession
+        sessions: [DoubtSession!]
     }
     
     type Teacher {
@@ -20,23 +21,86 @@ module.exports = buildSchema(`
         name: String!
         email: String!
         password: String
+        age: Int!
+        courses: [Courses!]
         dateJoined: String
         dateLastLogin: String
-        lastSession: Session
-        sessions: [Session!]
+        isAvailable: Boolean!
+        isOnline: Boolean!
+        lastSession: DoubtSession
+        sessions: [DoubtSession!]
+        rating: TeacherRating
     }
 
-    type Session {
+    type DoubtSession {
+        _id: ID!
+        questionText: String!
+        questionImage: String
+        teacher: Teacher!
+        course: Course
+        student: Student!
+        token: String!
+        duration: Int
+        rating: DoubtSessionRating
+        dateCreated: String!
+        isBroken: Boolean!
+        isComplete: Boolean!
+        rawData: String
+    }
+
+    type Request {
+        _id: ID!
+        student: Student!
+        teacher: Teacher
+        doubtSession: DoubtSession
+        doubtText: String!
+        doubtImage: String
+        bounceRate: Int
+        validated: Boolean!
+        rejected: Boolean!
+        isOpen: Boolean!
+    }
+
+    type Quiz {
         _id: ID!
         name: String!
+        courses: [Course!]
+        dateMade: String!
+        dateLastAttempted: String!
+        questions: [QuizQuestion!]
+        quizSessions: [QuizSession!]
+        timesAttempted: Int!
+    }
+
+    type QuizSession {
+        quiz: Quiz!
+        dateAttempted: String!
+        student: Student!
+    }
+
+    type QuizQuestion {
+        questionText: String!
+        difficulty: String!
+        options: [String!]!
+    }
+
+    type Rating {
+        type: String!
+        doubtSession: DoubtSession
+        quiz: Quiz
+        teacher: teacher
+        rating: Double!
+    }
+
+    type TeacherRating {
+        _id: ID!
         teacher: Teacher!
-        attendance: Int!
-        course: Course!
-        sessionId: String!
-        students: [Student!]!
-        sessionToken: String!
-        dateCreated: String!
-        isComplete: Boolean!
+        ratings: [Rating!]
+        reting: Float!
+    }
+
+    type DoubtSessionRating {
+        _id: ID!
     }
 
     type Course {
@@ -64,16 +128,13 @@ module.exports = buildSchema(`
         email: String!
         name: String!
         password: String!
-    }
-
-    input SessionInput {
-        name: String!
-        sessionToken: String!
+        age: Int!
     }
     
     type AuthData {
         userId: ID!
         token: String!
+        typeUser: String!
         tokenExpiration: Int!
     }
 
@@ -82,27 +143,30 @@ module.exports = buildSchema(`
         teachers: [Teacher!]!
         student: Student!
         teacher: Teacher!
-        sessions: [Session!]!
-        studentSessions: [Session!]!
-        teacherSessions: [Session!]!
-        courseSessions (courseCode: String!) : [Session!]!
-        teacherSession(name: String!): Session!
+        studentById(studentId: String!): Student!
+        teacherById(teacherId: String!): Teacher!
+        doubtSessions: [DoubtSession!]
+        studentDoubtSessions: [DoubtSession!]!
+        teacherDoubtSessions: [DoubtSession!]!
         studentCourses: [Course!]
         teacherCourses: [Course!]
+        checkMyRequest: Request!
+        askForRequest: Request!
+        getRawData(doubtSessionId: String!): String!
     }
     
     type RootMutation {
         createStudent(studentInput: StudentInput): AuthData!
         createTeacher(teacherInput: TeacherInput): AuthData!
-        createSession(courseToken: String!, name: String!): Session!
-        createCourse(name: String!, code: String!): Course!
         loginStudent(method: String!, password: String!): AuthData!
         loginTeacher(method: String!, password: String!): AuthData!
-        joinCourse(token: String!): Course!
-        markAttendance(token: String!): String!
-        completeSession(sessionId: String!): Session!
-        closeCourse(name: String): Course!
-        completeCourse(name: String): Course!
+        askDoubt(doubtText: String!, doubtImage: String): Request! 
+        completeDoubtSession(doubtSessionId: String!): DoubtSession!
+        teacherIsAvailable: String!
+        teacherIsUnavailable: String!
+        acceptRequest(requestId: String!): DoubtSession!
+        rejectRequest(requestId: String!): String!
+        sendRawData(doubtSessionId: String!, payload: String!): String!
     }
 
     schema {
@@ -110,3 +174,8 @@ module.exports = buildSchema(`
         mutation: RootMutation
     }
 `)
+
+
+// addIntern(internInput: InternInput!): Admin!
+// addModerator(moderatorInput: ModeratorInput): Admin!
+// addManager(managerInput: ManagerInput): Admin!

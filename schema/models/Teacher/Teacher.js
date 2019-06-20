@@ -14,6 +14,10 @@ const teacherSchema = new Schema({
         type: String,
         required: true,
     },
+    age: {
+        type: Number,
+        required: true,
+    },
     courses: [
         {
             type: Schema.Types.ObjectId,
@@ -28,6 +32,14 @@ const teacherSchema = new Schema({
         type: String,
         required: true
     },
+    isAvailable: {
+        type: Boolean,
+        required: true
+    },
+    isOnline: {
+        type: Boolean,
+        required: true
+    },
     lastSession: {
         type: Schema.Types.ObjectId,
         ref: 'Session'
@@ -35,9 +47,13 @@ const teacherSchema = new Schema({
     sessions: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Session'
+            ref: 'DoubtSession'
         }
-    ]
+    ],
+    rating: {
+        type: Schema.Types.ObjectId,
+        ref: 'TeacherRating'
+    }
 })
 
 module.exports = mongoose.model('Teacher', teacherSchema);

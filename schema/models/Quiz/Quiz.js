@@ -17,25 +17,24 @@ const quizSchema = new Schema({
         required: true
     },
     dateLastAttempted: {
-        type: String,
-        required: true
+        type: String
     },
     questions: [
         {
-            type: String,
-        }
-    ],
-    options: [
-        {
-            type: String,
+            type: Types.Schema.ObjectId,
+            ref: 'QuizQuestion'
         }
     ],
     quizSessions: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Session'
+            ref: 'QuizSession'
         }
-    ]
+    ],
+    timesAttempted: {
+        type: Number,
+        required: true,
+    }
 })
 
 module.exports = mongoose.model('Quiz', quizSchema);

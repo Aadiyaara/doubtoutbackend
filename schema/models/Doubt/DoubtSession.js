@@ -2,16 +2,19 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const doubtSessionSchema = new Schema({
-    question: {
+    questionText: {
         type: String,
-        required: true,
+        required: true
     },
-    tutor: {
+    questionImage: {
+        type: String,
+    },
+    teacher: {
         type: Schema.Types.ObjectId,
-        ref: 'Tutor',
-        required: true,
+        ref: 'Teacher',
+        required: true
     },
-    sessionToken: {
+    token: {
         type: String,
         required: true
     },
@@ -29,12 +32,11 @@ const doubtSessionSchema = new Schema({
         required: true
     },
     duration: {
-        tpye: Number,
-        required: false,
+        type: Number,
     },
     rating: {
         type: Schema.Types.ObjectId,
-        ref: 'Rating',
+        ref: 'DoubtSessionRating',
     },
     isBroken: {
         type: Boolean,
@@ -42,7 +44,10 @@ const doubtSessionSchema = new Schema({
     },
     isComplete: {
         type: Boolean,
-        required: true,
+        required: true
+    },
+    rawData: {
+        type: String
     }
 })
 

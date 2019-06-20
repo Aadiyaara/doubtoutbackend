@@ -38,12 +38,12 @@ const studentSchema = new Schema({
     ],
     lastSession: {
         type: Schema.Types.ObjectId,
-        ref: 'Session'
+        ref: 'DoubtSession'
     },
     sessions: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Session'
+            ref: 'DoubtSession'
         }
     ]
 })

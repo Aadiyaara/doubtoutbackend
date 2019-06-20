@@ -1,7 +1,8 @@
-const Student = require('../../schema/models/Student')
-const Teacher = require('../../schema/models/Teacher')
-const Session = require('../../schema/models/Session')
-const Course = require('../../schema/models/Course')
+const Student = require('../../schema/models/Student/Student')
+const Teacher = require('../../schema/models/Teacher/Teacher')
+const DoubtSession = require('../../schema/models/Doubt/DoubtSession')
+const Course = require('../../schema/models/Studies/Course')
+const Request = require('../../schema/models/Doubt/Request')
 
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -16,18 +17,7 @@ module.exports = {
             return student
         }
         catch (err) {
-            return err
-        }
-    },
-    teacher: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            const teacher = await Teacher.findById(req.userId)
-            return teacher
-        }
-        catch (err) {
+            console.log('Error getting the Student: ', err)
             return err
         }
     },
@@ -40,6 +30,46 @@ module.exports = {
             return students
         }
         catch (err) {
+            console.log('Error getting the Students: ', err)
+            return err
+        }
+    },
+    studentById: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const student = await Student.findById(args.studentId)
+            return student
+        }
+        catch (err) {
+            console.log('Error getting the Student by Id: ', err)
+            return err
+        }
+    },
+    //// Password Protected for both the Student and the Admin
+    //// MODES: [Student, Admin]
+    // updateStudent: async (args, req) => {
+    //     try {
+    //         if(!req.isAuth) {
+    //             throw new Error('Unauthenticated')
+    //         }
+    //     }
+    //     catch (err) {
+    //         console.log('Error updateing the Student: ', err)
+    //         return err    
+    //     }
+    // },
+    teacher: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const teacher = await Teacher.findById(req.userId)
+            return teacher
+        }
+        catch (err) {
+            console.log('Error getting the Teacher: ', err)
             return err
         }
     },
@@ -52,15 +82,57 @@ module.exports = {
             return teachers
         }
         catch (err) {
+            console.log('Error getting the Teachers: ', err)
             return err
         }
     },
+    teacherById: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const teacher = await Teacher.findById(args.teacherId)
+            return teacher
+        }
+        catch (err) {
+            console.log('Error getting the Teacher by Id: ', err)
+            return err    
+        }
+    },
+    doubtsessions: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const sessions = await DoubtSession.find()
+            return sessions
+        }
+        catch (err) {
+            console.log('Error getting the DoubtSessions: ', err)
+            return err
+        }
+    },
+    //// Password Protected fot both the teacher and the Admin
+    //// MODES: [Teacher, Admin]
+    // updateTeacher: async (args, req) => {
+    //     try {
+    //         if(!req.isAuth) {
+    //             throw new Error('Unauthenticated')
+    //         }
+    //         const teacher = await Teacher.findByIdAndUpdate(req.userId, {name: args.updateTeacherInput.name, age: args.updateTeacherInput.age, email:  args.updateTeacherInput.email, })
+    //         return teacher
+    //     }
+    //     catch (err) {
+    //         console.log('Error updateing the Teacher: ', err)
+    //         return err    
+    //     }
+    // },
     studentDoubtSessions: async (args, req) => {
         try {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const sessions = await Session.find({students: { $in: req.userId }})
+            const sessions = await DoubtSession.find({student: req.userId })
             return sessions
         }
         catch (err) {
@@ -72,7 +144,7 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const sessions = await Session.find({teacher: req.userId })
+            const sessions = await DoubtSession.find({teacher: req.userId })
             return sessions
         }
         catch (err) {
@@ -81,67 +153,67 @@ module.exports = {
     },
     //// TESTING START
     // FOR TESTING 25 to 1 in 8th class App
-    courseSessions: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            const course = await Course.findOne({teacher: req.userId, code: args.courseCode})
-            const sessions = await Session.find({teacher: req.userId,  course: course._id})
-            return sessions
-        }
-        catch (err) {
-            return err
-        }
-    },
-    sessionStudents: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            console.log('Getting')
-            const students = await Student.find({sessions: {$in: args.sessionId}})
-            console.log(students)
-            return students
-        }
-        catch (err) {
-            return err
-        }
-    },
+    // courseSessions: async (args, req) => {
+    //     try {
+    //         if(!req.isAuth) {
+    //             throw new Error('Unauthenticated')
+    //         }
+    //         const course = await Course.findOne({teacher: req.userId, code: args.courseCode})
+    //         const sessions = await DoubtSession.find({teacher: req.userId,  course: course._id})
+    //         return sessions
+    //     }
+    //     catch (err) {
+    //         return err
+    //     }
+    // },
+    // sessionStudents: async (args, req) => {
+    //     try {
+    //         if(!req.isAuth) {
+    //             throw new Error('Unauthenticated')
+    //         }
+    //         console.log('Getting')
+    //         const students = await Student.find({sessions: {$in: args.sessionId}})
+    //         console.log(students)
+    //         return students
+    //     }
+    //     catch (err) {
+    //         return err
+    //     }
+    // },
     //// TESTING END
-    courseStudents: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            const students = await Student.find({courses: {$in: args.courseId}})
-            return students
-        }
-        catch (err) {
-            return err
-        }
-    },
-    teacherDoubtSession: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            console.log("Finding: ", args.name, req.userId)
-            const session = await Session.findOne({teacher: req.userId, name: args.name})
-            return session
-        }
-        catch (err) {
-            console.log('Error getting the Session: ', err)
+    // courseStudents: async (args, req) => {
+    //     try {
+    //         if(!req.isAuth) {
+    //             throw new Error('Unauthenticated')
+    //         }
+    //         const students = await Student.find({courses: {$in: args.courseId}})
+    //         return students
+    //     }
+    //     catch (err) {
+    //         return err
+    //     }
+    // },
+    // teacherDoubtSession: async (args, req) => {
+    //     try {
+    //         if(!req.isAuth) {
+    //             throw new Error('Unauthenticated')
+    //         }
+    //         console.log("Finding: ", args.name, req.userId)
+    //         const session = await Session.findOne({teacher: req.userId, name: args.name})
+    //         return session
+    //     }
+    //     catch (err) {
+    //         console.log('Error getting the Session: ', err)
             
-        }
-    },
+    //     }
+    // },
     // Courses Details of the Student
     studentCourses: async (args, req) => {
         try {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const courses = await Course.find({students: { $in: req.userId }})
+            const courses = await Course.find({students: req.userId })
             return courses
         }
         catch (err) {
@@ -158,6 +230,35 @@ module.exports = {
             return courses
         }
         catch (err) {
+            return err
+        }
+    },
+    askForRequest: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const request = Request.findOne({isOpne: true, teacher: req.userId, validated: false, rejected: false})
+            if(!request) {
+                throw new Error('No Request Recieved')
+            }
+            return request
+        }
+        catch (err) {
+            console.log('Error asking for requests: ', err)
+            return err
+        }
+    },
+    getRawData: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const doubtSession = DoubtSession.findById(args.doubtSessionId)
+            return doubtSession.rawData
+        }
+        catch (err) {
+            console.log('Error getting the raw data for this session: ', err)
             return err
         }
     },
@@ -236,8 +337,11 @@ module.exports = {
                 name: args.teacherInput.name,
                 email: args.teacherInput.email,
                 password: hashedPassword,
+                age: args.teacherInput.age,
                 dateJoined: new Date().toString(),
-                dateLastLogin: new Date().toString()
+                dateLastLogin: new Date().toString(),
+                isAvailable: true,
+                isOnline: true
             })
             savedTeacher = await newTeacher.save()
             const token = jwt.sign({userId: savedTeacher.id}, 'ninenine', {
@@ -249,146 +353,42 @@ module.exports = {
             return err
         }
     },
-    createDoubtSession: async (args, req) => {
+    askDoubt: async (args, req) => {
         try {
             if(!req.isAuth) {
-                throw new Error('Unauthenticated')
+                throw new Error('Unauthorized')
             }
-            token = ''
-            const course = await Course.findOne({token: args.courseToken, teacher: req.userId})
-            console.log(course)
-            var randomPossibilites = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-            for (var i = 0; i < 10; i++) token += randomPossibilites.charAt(Math.floor(Math.random() * randomPossibilites.length))
-            const session = new Session({
-                name: args.name,
-                teacher: req.userId,
-                sessionToken: token,
-                attendance: 0,
-                course: course,
-                dateCreated: new Date().toString(),
-                isComplete: false
+            //  Find an able teacher first
+            const teachers = Teacher.find({isOnline: true, isAvailable: true})
+            if(teacher.length == 0) {
+                throw new Error('No Teachers available')
+            }
+            const teacher = teachers[Math.floor((Math.random() * teachers.length))]
+            await Teacher.findByIdAndUpdate(teacher._id, {isAvailable: false})
+            console.log('This doubt: ', args.doubtText,  ' had been assign to the teacher: ', teacher._id)
+            const request = new Request({
+                student: req.userId,
+                teacher: teacher._id,
+                doubtText: args.doubtText,
+                doubtImage: false,
+                bounceRate: 0,
+                validated: false,
+                rejected: false,
+                isOpen: true
             })
-            console.log("COURSE ID", course._id)
-            console.log(await Course.findByIdAndUpdate(course._id, {$push: {sessions: session}}, {new: true}))
-            return await session.save()
+            return Request
         }
         catch (err) {
-            console.log(err)
+            console.log('Error asking the Doubt: ', err)
             return err
         }
     },
-    createCourse: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            const course = await Course.findOne({ teacher: req.userId, name: args.name })
-            if(course) {
-                throw new Error('A course by this name exists already, try another name')
-            }
-            const teacher = await Teacher.findById(req.userId)
-            var token = teacher.name.slice(0, 3)
-            token = token.toUpperCase()
-            var randomPossibilites = '01234456789'
-            for (var i = 0; i < 5; i++) token += randomPossibilites.charAt(Math.floor(Math.random() * randomPossibilites.length))
-            const newCourse = new Course({
-                name: args.name,
-                code: args.code,
-                token: token,
-                teacher: req.userId,
-                strength: 0,
-                dateMade: Date.toString(),
-                isOpen: true,
-            })
-            return newCourse.save()
-        }
-        catch (err) {
-            return err
-        }
-    },
-    availableCourses: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            const courses = await Course.find({year: args.availableCoursesInput.year, branch: args.availableCoursesInput.branch, group: args.availableCoursesInput.group}).populate({
-                path: 'sessions',
-                populate: { path: 'sessions' }
-            })
-            return courses
-        }
-        catch (err) {
-            console.log('Error fetching the available courses: ', err)
-            return err
-        }
-    },
-    joinCourse: async (args, req) => {
-        try {
-            if(!req.isAuth) {
-                throw new Error('Unauthenticated')
-            }
-            const course = await Course.findOneAndUpdate({token: args.token}, {$push: {students: req.userId}, $inc: {strength: 1}}, {new: true})
-            if(!course) {
-                throw new Error('No Such Course')
-            }
-            await Student.findByIdAndUpdate(req.userId, {$push: {courses: course._id}}, {new: true})
-            return course
-        }
-        catch (err) {
-            console.log(err)
-            return err
-        }
-    },
-    //// TESTING START
-    // FOR TESTING 25 to 1 in 8th class App
-    markAttendance: async (args, req) => {
-        try {
-            // if(!req.isAuth) {
-            //     throw new Error('Unauthenticated')
-            // }
-            const session = await Session.find({sessionToken: args.token})
-            if(session) {
-                try {
-                    const saveSession = await Session.findOneAndUpdate({
-                        SessionToken: args.token
-                    }, {
-                        // $push: { student: req.userId },
-                        $inc: {attendance: 1} 
-                    }, {
-                        new: true
-                    })
-                    // const saveStudent = await Student.findByIdAndUpdate(
-                    //     req.userId,
-                    //     {
-                    //         $push: { sessions: saveSession }
-                    //     },
-                    //     {
-                    //         new: true
-                    //     }
-                    // )
-                }
-                catch (err) {
-                    return err
-                }
-                finally {
-                    return 'Marked Present'
-                }
-            }
-            else {
-                return 'No Such Session Exists'
-            }
-        }
-        catch (err) {
-            return err
-        }
-    },
-    //// TESTING END
     completeDoubtSession: async (args, req) => {
         try {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const currentSession = await Session.findOneAndUpdate({sessionToken: args.sessionToken}, {isComplete: true}, {new: true})
+            const currentSession = await DoubtSession.findByIdAndUpdate(args.DoubtSessionId, {isComplete: true}, {new: true})
             return currentSession
         }
         catch (err) {
@@ -397,44 +397,93 @@ module.exports = {
     },
     //// TO IMPLEMENT
     // Suspend Doubt Session
-    closeCourse: async (args, req) => {
+    teacherIsAvailable: async (args, req) => {
         try {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const currentCourse = await Course.findOneAndUpdate({name: args.name, teacher: args.userId}, {isOpen: false}, {new: true})
-            return currentCourse
+            const teacher = await Teacher.findByIdAndUpdate(req.userId, {isAvailable: true}, {new: true})
+            console.log('Teacher: ', teacher.name, ' marked available')
+            return 'Marked Available'
         }
         catch (err) {
-            console.log('Unable to close the course: ', err)
+            console.log('Error marking the teacher available: ', err)
             return err
         }
     },
-    // Save into history object Later *#*AAA*#*
-    completeCourse: async (args, req) => {
+    teacherIsUnavailable: async (args, req) => {
         try {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const byeByeCourse = await Course.deleteOne({name: args.name, teacher: args.userId})
-            return byeByeCourse
-            // Add Login to save to Past
+            const teacher = await Teacher.findByIdAndUpdate(req.userId, {isAvailable: false}, {new: true})
+            console.log('Teacher: ', teacher.name, ' marked unavailable')
+            return 'Marked Unavailable'
         }
         catch (err) {
-            console.log('Error complete and deleting the course', err)
-            return err            
+            console.log('Error marking the teacher unavailable: ', err)
+            return err
         }
     },
-    doubtsessions: async (args, req) => {
-        const sessions = await Session.find()
-        return sessions
+    acceptRequest: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const request = Request.findByIdAndUpdate(args.requestId, {validated: true}, {new: true})
+            if(request) {
+                token = ''
+                var randomPossibilites = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+                for (var i = 0; i < 6; i++) token += randomPossibilites.charAt(Math.floor(Math.random() * randomPossibilites.length))
+                const doubtSession = new DoubtSession({
+                    questionText: request.doubtText,
+                    questionImage: request.doubtImage,
+                    student: request.student,
+                    teacher: request.teacher,
+                    token: token,
+                    dateCreated: new Date().toString(),
+                    isBroken: false,
+                    isComplete: false
+                })
+                return await doubtSession.save()
+            }
+        }
+        catch (err) {
+            console.log('Error accepting the request: ', err)
+            return err
+        }
     },
-    courses: async (args, req) => {
-        const courses = await Course.find()
-        return courses
+    rejectRequest: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const teachers = await Teacher.find({isOnline: true, isAvailable: true})
+            if (teachers.length == 0) {
+                await Request.findByIdAndUpdate(args.requestId, {rejected: true}, {new: true})
+                await Teacher.findByIdAndUpdate(req.userId, {isAvailable: true}, {new: true})
+                return 'Rejected'
+            }
+            const teacher = teachers[Math.floor(Math.random() * teachers.length)]
+            await Request.findByIdAndUpdate(args.requestId, {teacher: teacher._id, $inc: {bounceRate: 1}}, {new: true})
+            return 'Rejected'
+        }
+        catch (err) {
+            console.log('Error accepting the request: ', err)
+            return err
+        }
     },
-    course: async (args, req) => {
-        const course = await Course.findById(args.courseId)
-        return course
+    sendRawData: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            doubtSession = await DoubtSession.findByIdAndUpdate(args.doubtSessionId, {rawData: args.payload})
+            return 'Updated'
+        }
+        catch (err) {
+            console.log('Error sending the Raw Data to the DoubtSession: ', err)
+            return err
+        }
     }
 }
