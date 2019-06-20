@@ -46,9 +46,11 @@ const doubtSessionSchema = new Schema({
         type: Boolean,
         required: true
     },
-    rawData: {
-        type: String
-    }
+    rawData: [
+        {
+            type: String
+        }
+    ]
 })
 
 module.exports = mongoose.model('DoubtSession', doubtSessionSchema)
