@@ -45,7 +45,8 @@ module.exports = buildSchema(`
         dateCreated: String!
         isBroken: Boolean!
         isComplete: Boolean!
-        rawData: [String!]
+        rawDataPoints: [String!]
+        rawDataColors: [String!]
     }
 
     type Request {
@@ -152,7 +153,7 @@ module.exports = buildSchema(`
         teacherCourses: [Course!]
         checkMyRequest: Request!
         askForRequest: Request!
-        getRawData(doubtSessionId: String!): [String!]
+        getRawData(doubtSessionId: String!): DoubtSession!
     }
     
     type RootMutation {
@@ -166,7 +167,7 @@ module.exports = buildSchema(`
         teacherIsUnavailable: String!
         acceptRequest(requestId: String!): DoubtSession!
         rejectRequest(requestId: String!): String!
-        sendRawData(doubtSessionId: String!, payload: [String!]): String!
+        sendRawData(doubtSessionId: String!, rawDataPoints: [String!], rawDataColors: [String!]): String!
     }
 
     schema {

@@ -46,7 +46,12 @@ const doubtSessionSchema = new Schema({
         type: Boolean,
         required: true
     },
-    rawData: [
+    rawDataPoints: [
+        {
+            type: String
+        }
+    ],
+    rawDataColors: [
         {
             type: String
         }

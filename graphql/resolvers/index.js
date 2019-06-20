@@ -255,7 +255,7 @@ module.exports = {
                 throw new Error('Unauthenticated')
             }
             const doubtSession = DoubtSession.findById(args.doubtSessionId)
-            return doubtSession.rawData
+            return doubtSession
         }
         catch (err) {
             console.log('Error getting the raw data for this session: ', err)
@@ -478,7 +478,7 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            doubtSession = await DoubtSession.findByIdAndUpdate(args.doubtSessionId, {rawData: args.payload})
+            doubtSession = await DoubtSession.findByIdAndUpdate(args.doubtSessionId, {rawDataPoints: args.rawDataPoints, rawDataColors: args.rawDataColors})
             return 'Updated'
         }
         catch (err) {
