@@ -151,7 +151,7 @@ module.exports = buildSchema(`
         teacherDoubtSessions: [DoubtSession!]!
         studentCourses: [Course!]
         teacherCourses: [Course!]
-        checkMyRequest: Request!
+        checkMyRequest(requestId: String!): Request!
         askForRequest: Request!
         getRawData(doubtSessionId: String!): DoubtSession!
     }
