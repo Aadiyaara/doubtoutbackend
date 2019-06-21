@@ -376,6 +376,8 @@ module.exports = {
             if(teacher.length == 0) {
                 throw new Error('No Teachers available')
             }
+            console.log(teachers)
+            console.log(Math.floor((Math.random() * teachers.length)));
             const teacher = teachers[Math.floor((Math.random() * teachers.length))]
             await Teacher.findByIdAndUpdate(teacher._id, {isAvailable: false})
             console.log('This doubt: ', args.doubtText,  ' had been assign to the teacher: ', teacher._id)
@@ -389,7 +391,7 @@ module.exports = {
                 rejected: false,
                 isOpen: true
             })
-            return Request
+            return await request.save()
         }
         catch (err) {
             console.log('Error asking the Doubt: ', err)
