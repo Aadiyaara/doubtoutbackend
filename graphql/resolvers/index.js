@@ -251,7 +251,7 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const request = Request.findOne({isOpne: true, teacher: req.userId, validated: false, rejected: false}).populate('student')
+            const request = Request.findOne({isOpen: true, teacher: req.userId, validated: false, rejected: false}).populate('student')
             if(!request) {
                 throw new Error('No Request Recieved')
             }
