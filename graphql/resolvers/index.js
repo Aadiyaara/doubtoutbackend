@@ -373,7 +373,7 @@ module.exports = {
             }
             //  Find an able teacher first
             const teachers = Teacher.find({isOnline: true, isAvailable: true})
-            if(teacher.length == 0) {
+            if(teachers.length == 0) {
                 throw new Error('No Teachers available')
             }
             console.log(teachers)
