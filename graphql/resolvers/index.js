@@ -475,7 +475,7 @@ module.exports = {
             }
             const teachers = await Teacher.find({isOnline: true, isAvailable: true})
             if (teachers.length == 0) {
-                await Request.findByIdAndUpdate(args.requestId, {rejected: true}, {new: true})
+                await Request.findByIdAndUpdate(args.requestId, {rejected: true, teacher: null}, {new: true})
                 await Teacher.findByIdAndUpdate(req.userId, {isAvailable: true}, {new: true})
                 return 'Rejected'
             }
