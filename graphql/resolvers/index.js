@@ -372,7 +372,7 @@ module.exports = {
                 throw new Error('Unauthorized')
             }
             //  Find an able teacher first
-            const teachers = Teacher.find({isOnline: true, isAvailable: true})
+            const teachers = await Teacher.find({isOnline: true, isAvailable: true})
             if(teachers.length == 0) {
                 throw new Error('No Teachers available')
             }
