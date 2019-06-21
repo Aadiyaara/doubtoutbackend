@@ -233,6 +233,19 @@ module.exports = {
             return err
         }
     },
+    checkMyRequest: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const request = await Request.findById(args.requestId)
+            return request
+        }
+        catch (err) {
+            console.log('Error checking for student pending request: ', err)
+            return err
+        }
+    },
     askForRequest: async (args, req) => {
         try {
             if(!req.isAuth) {
