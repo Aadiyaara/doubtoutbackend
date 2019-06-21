@@ -10,7 +10,7 @@ module.exports = buildSchema(`
         phoneNumber: String!
         password: String
         dateJoined: String
-        courses: [Courses!]
+        courses: [Course!]
         dateLastLogin: String
         lastSession: DoubtSession
         sessions: [DoubtSession!]
@@ -22,7 +22,7 @@ module.exports = buildSchema(`
         email: String!
         password: String
         age: Int!
-        courses: [Courses!]
+        courses: [Course!]
         dateJoined: String
         dateLastLogin: String
         isAvailable: Boolean!
@@ -89,8 +89,8 @@ module.exports = buildSchema(`
         type: String!
         doubtSession: DoubtSession
         quiz: Quiz
-        teacher: teacher
-        rating: Double!
+        teacher: Teacher
+        rating: Float!
     }
 
     type TeacherRating {
@@ -109,7 +109,7 @@ module.exports = buildSchema(`
         name: String!
         code: String!
         token: String!
-        sessions: [Session!]
+        sessions: [DoubtSession!]
         teacher: Teacher!
         students: [Student!]
         strength: Int!
