@@ -445,7 +445,7 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const request = Request.findByIdAndUpdate(args.requestId, {validated: true}, {new: true})
+            const request = await Request.findByIdAndUpdate(args.requestId, {validated: true}, {new: true})
             if(request) {
                 token = ''
                 var randomPossibilites = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -484,7 +484,7 @@ module.exports = {
             return 'Rejected'
         }
         catch (err) {
-            console.log('Error accepting the request: ', err)
+            console.log('Error rejecting the request: ', err)
             return err
         }
     },
