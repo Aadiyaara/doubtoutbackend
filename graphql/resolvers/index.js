@@ -445,7 +445,7 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const request = await Request.findByIdAndUpdate(args.requestId, {validated: true}, {new: true})
+            const request = await Request.findById(args.requestId)
             if(request) {
                 token = ''
                 var randomPossibilites = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -460,7 +460,9 @@ module.exports = {
                     isBroken: false,
                     isComplete: false
                 })
-                return await doubtSession.save()
+                const savedDoubtSession = await doubtSession.save()
+                await Request.findByIdAndUpdate(args.requestId, {validated: true, doubtSession: savedDoubtSession}, {new: true})
+                return savedDoubtSession
             }
         }
         catch (err) {
