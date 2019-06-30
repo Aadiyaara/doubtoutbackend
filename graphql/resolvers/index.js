@@ -438,7 +438,7 @@ module.exports = {
                 name: args.managerInput.name,
                 email: args.managerInput.email,
                 password: hashedPassword,
-                dateJoined: new Date().toSDatetring(),
+                dateJoined: new Date().toDatetring(),
                 dateLastLogin: new Date().toDateString(),
                 isAvailable: true,
                 isOnline: true
