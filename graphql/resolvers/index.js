@@ -602,7 +602,7 @@ module.exports = {
             const quiz = new Quiz({
                 name: args.name,
                 courses: args.courses,
-                dateMade: new Date.toDateString(),
+                dateMade: new Date().toDateString(),
                 timesAttempted: 0
             })
             const savedQuiz = await quiz.save()
