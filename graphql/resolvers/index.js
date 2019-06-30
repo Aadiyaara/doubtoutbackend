@@ -386,8 +386,8 @@ module.exports = {
                 password: hashedPassword,
                 address: args.studentInput.address,
                 phoneNumber: args.studentInput.phoneNumber,
-                dateJoined: new Date().toSDatetring(),
-                dateLastLogin: new Date().toSDatetring()
+                dateJoined: new Date().toDateString(),
+                dateLastLogin: new Date().toDateString()
             })
             savedStudent = await newStudent.save()
             const token = jwt.sign({userId: savedStudent.id}, 'ninenine', {
@@ -412,7 +412,7 @@ module.exports = {
                 email: args.teacherInput.email,
                 password: hashedPassword,
                 age: args.teacherInput.age,
-                dateJoined: new Date().toSDatetring(),
+                dateJoined: new Date().toDateString(),
                 dateLastLogin: new Date().toDateString(),
                 isAvailable: true,
                 isOnline: true
@@ -602,7 +602,7 @@ module.exports = {
             const quiz = new Quiz({
                 name: args.name,
                 courses: args.courses,
-                dateMade: new Date.toSDatetring(),
+                dateMade: new Date.toDateString(),
                 timesAttempted: 0
             })
             const savedQuiz = await quiz.save()
