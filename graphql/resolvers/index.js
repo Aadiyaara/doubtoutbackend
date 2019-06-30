@@ -1,5 +1,6 @@
 const Student = require('../../schema/models/Student/Student')
 const Teacher = require('../../schema/models/Teacher/Teacher')
+const Manager = require('../../schema/models/Admin/Manager')
 const DoubtSession = require('../../schema/models/Doubt/DoubtSession')
 const Course = require('../../schema/models/Studies/Course')
 const Request = require('../../schema/models/Doubt/Request')
@@ -353,6 +354,24 @@ module.exports = {
             return err
         }
     },
+    loginManager: async (args, req) => {
+        try {
+            const manager = await Manager.findOne({ email: args.method })
+            if(!manager) {
+                console.log('User does not Exist')
+                throw new Error('User does not exist')
+            }
+            const isEqual = await bcrypt.compare(args.password, manager.password)
+            if(!isEqual) throw new Error('Invalid Password')
+            const token = jwt.sign({userId: manager.id}, 'ninenine', {
+                expiresIn: '8760h'
+            })
+            return { userId: manager.id, token: token, typeUser: 'Manager', tokenExpiration: 8760 }
+        }
+        catch (err) {
+            return err
+        }
+    },
     // AAA Nullify the password
     createStudent: async (args) => {
         try {
@@ -403,6 +422,32 @@ module.exports = {
                 expiresIn: '8760h'
             })
             return { userId: savedTeacher.id, token: token, typeUser: 'Teacher', tokenExpiration: 8760 }
+        }
+        catch (err) {
+            return err
+        }
+    },
+    createManager: async (args) => {
+        try {
+            const manager = await Manager.findOne({ email: args.managerInput.email })
+            if(manager) {
+                throw new Error('User exists already')
+            }
+            const hashedPassword = await bcrypt.hash(args.managerInput.password, 12)
+            const newManager = new Manager({
+                name: args.managerInput.name,
+                email: args.managerInput.email,
+                password: hashedPassword,
+                dateJoined: new Date().toSDatetring(),
+                dateLastLogin: new Date().toDateString(),
+                isAvailable: true,
+                isOnline: true
+            })
+            savedManager = await newManager.save()
+            const token = jwt.sign({userId: savedManager.id}, 'ninenine', {
+                expiresIn: '8760h'
+            })
+            return { userId: savedManager.id, token: token, typeUser: 'Manager', tokenExpiration: 8760 }
         }
         catch (err) {
             return err

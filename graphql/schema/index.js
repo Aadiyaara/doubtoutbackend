@@ -136,6 +136,12 @@ Sessionquestions: [QuizQuestion!]
         age: Int!
     }
 
+    input ManagerInput {
+        name: String!
+        email: String!
+        password: String!
+    }
+
     input QuizQuestionInput {
         questionId: String
         quizId: String
@@ -181,8 +187,10 @@ Sessionquestions: [QuizQuestion!]
     type RootMutation {
         createStudent(studentInput: StudentInput): AuthData!
         createTeacher(teacherInput: TeacherInput): AuthData!
+        createManager(managerInput: ManagerInput!): AuthData!
         loginStudent(method: String!, password: String!): AuthData!
         loginTeacher(method: String!, password: String!): AuthData!
+        loginManager(method: String!, password: String!): AuthData!
         askDoubt(doubtText: String!, doubtImage: String): Request! 
         completeDoubtSession(doubtSessionId: String!): DoubtSession!
         teacherIsAvailable: String!
