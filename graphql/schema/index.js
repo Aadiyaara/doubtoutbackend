@@ -12,8 +12,10 @@ module.exports = buildSchema(`
         dateJoined: String
         courses: [Course!]
         dateLastLogin: String
-        lastSession: DoubtSession
-        sessions: [DoubtSession!]
+        lastDoubtSession: DoubtSession
+        lastQuizSession: QuizSession
+        doubtSessions: [DoubtSession!]
+        quizSessions: [QuizSession!]
     }
     
     type Teacher {
@@ -68,7 +70,7 @@ module.exports = buildSchema(`
         courses: [Course!]
         dateMade: String!
         dateLastAttempted: String!
-        questions: [QuizQuestion!]
+Sessionquestions: [QuizQuestion!]
         quizSessions: [QuizSession!]
         timesAttempted: Int!
     }
@@ -80,8 +82,10 @@ module.exports = buildSchema(`
     }
 
     type QuizQuestion {
+        quiz: Quiz!
         questionText: String!
         difficulty: String!
+        answer: String!
         options: [String!]!
     }
 
@@ -131,6 +135,21 @@ module.exports = buildSchema(`
         password: String!
         age: Int!
     }
+
+    input QuizQuestionInput {
+        questionId: String
+        quizId: String
+        questionText: String!
+        options: [String!]!
+        answer: String!
+        difficulty: String!
+    }
+
+    input AnswerQuestionInput {
+        quizSessionId: String!
+        quizId: String!
+        answer: String!
+    }
     
     type AuthData {
         userId: ID!
@@ -154,6 +173,9 @@ module.exports = buildSchema(`
         checkMyRequest(requestId: String!): Request!
         askForRequest: Request!
         getRawData(doubtSessionId: String!): DoubtSession!
+        quizzes: [Quiz!]
+        quizQuestions(quizId: String!): [QuizQuestion!]
+        quizSessions(quizId: String!): [QuizSession!] 
     }
     
     type RootMutation {
@@ -168,6 +190,12 @@ module.exports = buildSchema(`
         acceptRequest(requestId: String!): DoubtSession!
         rejectRequest(requestId: String!): String!
         sendRawData(doubtSessionId: String!, rawDataPoints: [String!], rawDataColors: [String!]): String!
+        makeQuiz(name: String!, courses: [String!]): Quiz!
+        addQuizQuestion(quizQuestionInput: QuizQuestionInput!): QuizQuestion!
+        removeQuizQuestion(questionId: String!): String!
+        updateQuizQuestion(quizQuestionInput: QuizQuestionInput!): QuizQuestion!
+        startQuizSession(quizId: String!): QuizSession!
+        answerQuizQuestion(answerQuestionInput: AnswerQuestionInput!): String!
     }
 
     schema {

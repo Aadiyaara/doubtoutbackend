@@ -36,14 +36,24 @@ const studentSchema = new Schema({
             ref: 'Course'
         }
     ],
-    lastSession: {
+    lastDoubtSession: {
         type: Schema.Types.ObjectId,
         ref: 'DoubtSession'
     },
-    sessions: [
+    lastQuizSession: {
+        type: Schema.Types.ObjectId,
+        ref: 'QuizSession'
+    },
+    doubtSessions: [
         {
             type: Schema.Types.ObjectId,
             ref: 'DoubtSession'
+        }
+    ],
+    quizSessions: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'QuizSession'
         }
     ]
 })

@@ -12,10 +12,20 @@ const quizSessionSchema = new Schema({
         ref: 'Student',
         required: true
     },
+    score: {
+        type: Number,
+        required: true
+    },
+    answers: [
+        {
+            type: String,
+            required: true
+        }
+    ],
     dateAttempted: {
         type: String,
         required: true
-    }
+    },
 })
 
 module.exports = mongoose.model('QuizSession', quizSessionSchema);

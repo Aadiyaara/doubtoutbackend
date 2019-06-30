@@ -21,7 +21,7 @@ const quizSchema = new Schema({
     },
     questions: [
         {
-            type: Types.Schema.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: 'QuizQuestion'
         }
     ],

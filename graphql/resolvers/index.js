@@ -3,6 +3,9 @@ const Teacher = require('../../schema/models/Teacher/Teacher')
 const DoubtSession = require('../../schema/models/Doubt/DoubtSession')
 const Course = require('../../schema/models/Studies/Course')
 const Request = require('../../schema/models/Doubt/Request')
+const Quiz = require('../../schema/models/Quiz/Quiz')
+const QuizSession = require('../../schema/models/Quiz/QuizSession')
+const QuizQuestion = require('../../schema/models/Quiz/QuizQuestion')
 
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -251,7 +254,7 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const request = Request.findOne({isOpen: true, teacher: req.userId, validated: false, rejected: false}).populate('student')
+            const request = await Request.findOne({isOpen: true, teacher: req.userId, validated: false, rejected: false}).populate('student')
             if(!request) {
                 throw new Error('No Request Recieved')
             }
@@ -267,11 +270,50 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const doubtSession = DoubtSession.findById(args.doubtSessionId)
+            const doubtSession = await DoubtSession.findById(args.doubtSessionId)
             return doubtSession
         }
         catch (err) {
             console.log('Error getting the raw data for this session: ', err)
+            return err
+        }
+    },
+    quizzes: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const quizzes = await Quiz.find()
+            return quizzes
+        }
+        catch (err) {
+            console.log('Error getting all the Quizzes: ', err)
+            return err
+        }
+    },
+    quizQuestions: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const questions = await QuizQuestion.find({quiz: args.quizId})
+            return questions
+        }
+        catch (err) {
+            console.log('Error getting the Quiz questions for this session: ', err)
+            return err
+        }
+    },
+    quizSessions: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const questions = await QuizSession.find({quiz: args.quizId})
+            return questions
+        }
+        catch (err) {
+            console.log('Error getting the Quiz sessions for this Quiz: ', err)
             return err
         }
     },
@@ -325,8 +367,8 @@ module.exports = {
                 password: hashedPassword,
                 address: args.studentInput.address,
                 phoneNumber: args.studentInput.phoneNumber,
-                dateJoined: new Date().toString(),
-                dateLastLogin: new Date().toString()
+                dateJoined: new Date().toSDatetring(),
+                dateLastLogin: new Date().toSDatetring()
             })
             savedStudent = await newStudent.save()
             const token = jwt.sign({userId: savedStudent.id}, 'ninenine', {
@@ -351,8 +393,8 @@ module.exports = {
                 email: args.teacherInput.email,
                 password: hashedPassword,
                 age: args.teacherInput.age,
-                dateJoined: new Date().toString(),
-                dateLastLogin: new Date().toString(),
+                dateJoined: new Date().toSDatetring(),
+                dateLastLogin: new Date().toDateString(),
                 isAvailable: true,
                 isOnline: true
             })
@@ -456,7 +498,7 @@ module.exports = {
                     student: request.student,
                     teacher: request.teacher,
                     token: token,
-                    dateCreated: new Date().toString(),
+                    dateCreated: new Date().toDateString(),
                     isBroken: false,
                     isComplete: false
                 })
@@ -500,6 +542,123 @@ module.exports = {
         }
         catch (err) {
             console.log('Error sending the Raw Data to the DoubtSession: ', err)
+            return err
+        }
+    },
+    makeQuiz: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const isAlreadyDefined = await Quiz.findOne({name: args.quizInput.name})
+            if(isAlreadyDefined) {
+                throw new Error('A Quiz by this name already exists')
+            }
+            const quiz = new Quiz({
+                name: args.quizInput.name,
+                courses: args.quizInput.courses,
+                dateMade: new Date.toSDatetring(),
+                timesAttempted: 0
+            })
+            const savedQuiz = await quiz.save()
+            return savedQuiz
+        }
+        catch (err) {
+            console.log('Error Defining the Quiz: ', err)
+            return err
+        }
+    },
+    addQuestionQuiz: async(args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const isAlreadyInQuiz = await QuizQuestion.findOne({questionText: args.quizQuestionInput.questionText, quiz: args.quizQuestionInput.quizId})
+            if(isAlreadyInQuiz) {
+                throw new Error('A Question by this name already exists in the Quiz')
+            }
+            const quizQuestion = new QuizQuestion({
+                quiz: args.quizQuestionInput.quizId,
+                questionText: args.quizQuestionInput.questionText,
+                difficulty: args.quizQuestionInput.difficulty,
+                answer: args.quizQuestionInput.answer,
+                options: args.quizQuestionInput.options
+            })
+            const savedQuizQuestion = await quizQuestion.save()
+            await Quiz.findByIdAndUpdate(args.quizQuestionInput.quizId, {$push: {questions: savedQuizQuestion}})
+            return savedQuizQuestion
+        }
+        catch (err) {
+            console.log('Error Adding the Question to the Quiz: ', err)
+            return err
+        }
+    },
+    removeQuizQuestion: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            await Quiz.findByIdAndUpdate(args.quizId, { $pull: { questions: args.questionId } })
+            await QuizQuestion.findByIdAndDelete(args.questionId)
+            return 'Done'
+        }
+        catch (err) {
+            console.log('Error Removing the Question from the Quiz: ', err)
+            return err
+        }
+    },
+    updateQuizQuestion: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const newQuestion = await QuizQuestion.findByIdAndUpdate(args.quizQuestionInput.questionId, {questionText: args.quizQuestionInput.questionText, options: args.quizQuestionInput.options, answer: args.quizQuestionInput.answer, difficulty: args.quizQuestionInput.difficulty}, {new: true})
+            return newQuestion
+        }
+        catch (err) {
+            console.log('Error Updateing the Quiz Question: ', err)
+            return err
+        }
+    },
+    startQuizSession: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const quizSession = new QuizSession({
+                quiz: args.quizId,
+                student: req.userId,
+                score: 0,
+                answers: [],
+                dateAttempted: new Date().toDateString()
+            })
+            const savedQuizSession = await quizSession.save()
+            return savedQuizSession
+        }
+        catch (err) {
+            console.log('Error joining a new QuizSession: ', err)
+            return err
+        }
+    },
+    answerQuizQuestion: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            isCorrect = false;
+            const quizQuestion = await QuizQuestion.findById(args.answerQuestionInput.questionId)
+            if(args.answerQuestionInput.answer == quizQuestion.answer) isCorrect = true
+            if(isCorrect) {
+                await QuizSession.findByIdAndUpdate(args.answerQuestionInput.quizSessionId, {$push: {answers: '[' + args.answerQuestionInput.questionId + ']: ' + args.answerQuestionInput.answer}, $inc: {score: 1}})
+                return 'Correct'
+            }
+            else {
+                await QuizSession.findByIdAndUpdate(args.answerQuestionInput.quizSessionId, {$push: {answers: '[' + args.answerQuestionInput.questionId + ']: ' + args.answerQuestionInput.answer}})
+                return 'Wrong'
+            }
+        }
+        catch (err) {
+            console.log('Unable to record the answer of the quiz: ', err)
             return err
         }
     }
