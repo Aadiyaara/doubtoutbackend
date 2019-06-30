@@ -595,13 +595,13 @@ module.exports = {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
             }
-            const isAlreadyDefined = await Quiz.findOne({name: args.quizInput.name})
+            const isAlreadyDefined = await Quiz.findOne({name: args.name})
             if(isAlreadyDefined) {
                 throw new Error('A Quiz by this name already exists')
             }
             const quiz = new Quiz({
-                name: args.quizInput.name,
-                courses: args.quizInput.courses,
+                name: args.name,
+                courses: args.courses,
                 dateMade: new Date.toSDatetring(),
                 timesAttempted: 0
             })
