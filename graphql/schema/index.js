@@ -76,6 +76,7 @@ module.exports = buildSchema(`
     }
 
     type QuizSession {
+        _id: ID!
         quiz: Quiz!
         dateAttempted: String!
         student: Student!
