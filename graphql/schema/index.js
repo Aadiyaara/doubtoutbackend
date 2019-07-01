@@ -70,7 +70,7 @@ module.exports = buildSchema(`
         courses: [Course!]
         dateMade: String!
         dateLastAttempted: String!
-Sessionquestions: [QuizQuestion!]
+        questions: [QuizQuestion!]
         quizSessions: [QuizSession!]
         timesAttempted: Int!
     }
@@ -82,6 +82,7 @@ Sessionquestions: [QuizQuestion!]
     }
 
     type QuizQuestion {
+        _id: ID!
         quiz: Quiz!
         questionText: String!
         difficulty: String!
