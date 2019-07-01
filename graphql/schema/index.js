@@ -92,6 +92,7 @@ module.exports = buildSchema(`
     }
 
     type Rating {
+        _id: ID!
         type: String!
         doubtSession: DoubtSession
         quiz: Quiz

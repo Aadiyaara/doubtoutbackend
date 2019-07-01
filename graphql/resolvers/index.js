@@ -622,6 +622,7 @@ module.exports = {
             if(isAlreadyInQuiz) {
                 throw new Error('A Question by this name already exists in the Quiz')
             }
+            console.log('here')
             const quizQuestion = new QuizQuestion({
                 quiz: args.quizQuestionInput.quizId,
                 questionText: args.quizQuestionInput.questionText,
