@@ -613,7 +613,7 @@ module.exports = {
             return err
         }
     },
-    addQuestionQuiz: async(args, req) => {
+    addQuizQuestion: async(args, req) => {
         try {
             if(!req.isAuth) {
                 throw new Error('Unauthenticated')
