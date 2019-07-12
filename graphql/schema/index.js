@@ -11,6 +11,7 @@ module.exports = buildSchema(`
         password: String
         dateJoined: String
         courses: [Course!]
+        group: Group
         dateLastLogin: String
         lastDoubtSession: DoubtSession
         lastQuizSession: QuizSession
@@ -111,6 +112,15 @@ module.exports = buildSchema(`
         _id: ID!
     }
 
+    type Group {
+        _id: ID!
+        name: String!
+        kind: String!
+        students: [Student!]!
+        dateMade: String!
+        doubtSessions: [DoubtSession!]
+    }
+
     type Course {
         _id: ID!
         name: String!
@@ -174,6 +184,7 @@ module.exports = buildSchema(`
         teacher: Teacher!
         studentById(studentId: String!): Student!
         teacherById(teacherId: String!): Teacher!
+        requests: [Request!]
         doubtSessions: [DoubtSession!]
         studentDoubtSessions: [DoubtSession!]!
         teacherDoubtSessions: [DoubtSession!]!
@@ -184,7 +195,9 @@ module.exports = buildSchema(`
         getRawData(doubtSessionId: String!): DoubtSession!
         quizzes: [Quiz!]
         quizQuestions(quizId: String!): [QuizQuestion!]
-        quizSessions(quizId: String!): [QuizSession!] 
+        quizSessions(quizId: String!): [QuizSession!]
+        groups: [Group!]
+        studentGroup: Group!
     }
     
     type RootMutation {
@@ -207,6 +220,9 @@ module.exports = buildSchema(`
         updateQuizQuestion(quizQuestionInput: QuizQuestionInput!): QuizQuestion!
         startQuizSession(quizId: String!): QuizSession!
         answerQuizQuestion(answerQuestionInput: AnswerQuestionInput!): String!
+        createGroup(name: String!, kind: String!): Group!
+        addStudentToGroup(groupId: String!): String!
+        removeStudentFromGroup: String!
     }
 
     schema {

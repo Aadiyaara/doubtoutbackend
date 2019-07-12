@@ -7,6 +7,7 @@ const Request = require('../../schema/models/Doubt/Request')
 const Quiz = require('../../schema/models/Quiz/Quiz')
 const QuizSession = require('../../schema/models/Quiz/QuizSession')
 const QuizQuestion = require('../../schema/models/Quiz/QuizQuestion')
+const Group = require('../../schema/models/Student/Group')
 
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -153,6 +154,18 @@ module.exports = {
         }
         catch (err) {
             return err
+        }
+    },
+    requests: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const requests = await Request.find()
+            return requests
+        }
+        catch (err) {
+            throw new Error('Error getting all requests')
         }
     },
     //// TESTING START
@@ -318,6 +331,32 @@ module.exports = {
             return err
         }
     },
+    groups: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            return await Group.find()
+        }
+        catch (err) {
+            console.log('Error retrieving all the groups: ', err)
+            return err
+        }
+    },
+    studentGroup: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const processStudent = await Student.findById(req.userId)
+            if (processStudent.group == null) throw new Error('Student is not a part of any group')
+            return await Group.findOne({students: {$in : req.userId}})
+        }
+        catch (err) {
+            console.log('Error getting the student group: ', err)
+            return err
+        }
+    },
     loginStudent: async (args, req) => {
         try {
             const student = await Student.findOne({ email: args.method })
@@ -472,7 +511,7 @@ module.exports = {
                 student: req.userId,
                 teacher: teacher._id,
                 doubtText: args.doubtText,
-                doubtImage: false,
+                doubtImage: args.doubtImage,
                 bounceRate: 0,
                 validated: false,
                 rejected: false,
@@ -705,6 +744,64 @@ module.exports = {
         }
         catch (err) {
             console.log('Unable to record the answer of the quiz: ', err)
+            return err
+        }
+    },
+    createGroup: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const group = new Group({
+                name: args.name,
+                kind: args.kind,
+                students: [req.userId],
+                dateMade: new Date().toDateString(),
+                strength: 1
+            })
+            return await group.save()
+        }
+        catch (err) {
+            console.log('Error Creating the Group: ', err)
+            return err
+        }
+    },
+    addStudentToGroup: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const groupToJoin = await Group.findById(args.groupId)
+            if(!groupToJoin) throw new Error('No Such Group!')
+            if(groupToJoin.strength == 4) throw new Error('Group reached its maximum capacity')
+            await Group.findByIdAndUpdate(args.groupId, {$push: {students: req.userId}, $inc: {strength: 1}}, {new: true})
+            return 'Done Successfully'
+        }
+        catch (err) {
+            console.log('Error adding student to the group: ', err)
+        }
+    },
+    removeStudentFromGroup: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            const processStudent = await Student.findById(req.userId)
+            const groupToLeave = await Group.findById(processStudent.group)
+            if(!groupToLeave) throw new Error('Student is not a part of any group')
+            await Student.findByIdAndUpdate(req.userId, {group: null}, {new: true})
+            if(groupToLeave.strength == 1) {
+                // Group must be deleted
+                await Group.findByIdAndDelete(groupToLeave._id)
+            }
+            else {
+                // Group can strive
+                await Group.findByIdAndUpdate(groupToLeave._id, {$pull: {students: req.userId}, $inc: {strength: -1}}, {new: true})
+            }
+            return 'Done Successfully'
+        }
+        catch (err) {
+            console.log('Error leaving the group: ', err)
             return err
         }
     }

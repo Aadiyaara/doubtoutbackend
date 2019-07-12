@@ -30,6 +30,10 @@ const studentSchema = new Schema({
         type: String,
         required: true
     },
+    group: {
+        type: Schema.Types.ObjectId,
+        ref: 'Group'
+    },
     courses: [
         {
             type: Schema.Types.ObjectId,
