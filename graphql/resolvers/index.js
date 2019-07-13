@@ -766,7 +766,7 @@ module.exports = {
         const course = new Course({
             name: args.courseInput.name,
             code: args.courseInput.code,
-            targetGroup: argds.courseInput.targetGroup,
+            targetGroup: args.courseInput.targetGroup,
             dateMade: new Date().toDateString(),
             isOpen: true
         })
