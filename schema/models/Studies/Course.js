@@ -10,36 +10,26 @@ const courseSchema = new Schema({
         type: String,
         required: true,
     },
-    token: {
+    targetGroup: {
         type: String,
         required: true
     },
-    teacher: {
-        type: Schema.Types.ObjectId,
-        ref: 'Teacher',
-        required: true,
-    },
+    teachers: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Teacher'
+        }
+    ],
     dateMade: {
         type: String,
         required: true
     },
-    students: [
+    quizzes: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Student'
+            ref: 'Quiz'
         }
     ],
-    sessions: [
-        {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: 'Session'
-        }
-    ],
-    strength: {
-        type: Number,
-        required: true
-    },
     isOpen: {
         type: Boolean,
         required: true

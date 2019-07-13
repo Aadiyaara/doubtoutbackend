@@ -331,6 +331,18 @@ module.exports = {
             return err
         }
     },
+    courses: async (args, req) => {
+        try {
+            if(!req.isAuth) {
+                throw new Error('Unauthenticated')
+            }
+            return await Course.find()
+        }
+        catch (err) {
+            console.log('Error getting all the courses')
+            return err
+        }
+    },
     groups: async (args, req) => {
         try {
             if(!req.isAuth) {
@@ -746,6 +758,19 @@ module.exports = {
             console.log('Unable to record the answer of the quiz: ', err)
             return err
         }
+    },
+    createCourse: async (args, req) => {
+        if(!req.isAuth) {
+            throw new Error(Unauthenticated)
+        }
+        const course = new Course({
+            name: args.courseInput.name,
+            code: args.courseInput.code,
+            targetGroup: argds.courseInput.targetGroup,
+            dateMade: new Date().toDateString(),
+            isOpen: true
+        })
+        return await course.save()
     },
     createGroup: async (args, req) => {
         try {

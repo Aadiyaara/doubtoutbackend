@@ -125,11 +125,9 @@ module.exports = buildSchema(`
         _id: ID!
         name: String!
         code: String!
-        token: String!
-        sessions: [DoubtSession!]
-        teacher: Teacher!
-        students: [Student!]
-        strength: Int!
+        targetGroup: String!
+        quizzes: [Quiz!]
+        teachers: [Teacher!]
         dateMade: String!
         isOpen: Boolean!
     }
@@ -169,6 +167,12 @@ module.exports = buildSchema(`
         quizId: String!
         answer: String!
     }
+
+    input CourseInput {
+        name: String!
+        code: String!
+        targetGroup: String!
+    }
     
     type AuthData {
         userId: ID!
@@ -196,6 +200,7 @@ module.exports = buildSchema(`
         quizzes: [Quiz!]
         quizQuestions(quizId: String!): [QuizQuestion!]
         quizSessions(quizId: String!): [QuizSession!]
+        courses: [Course!]
         groups: [Group!]
         studentGroup: Group!
     }
@@ -220,6 +225,7 @@ module.exports = buildSchema(`
         updateQuizQuestion(quizQuestionInput: QuizQuestionInput!): QuizQuestion!
         startQuizSession(quizId: String!): QuizSession!
         answerQuizQuestion(answerQuestionInput: AnswerQuestionInput!): String!
+        createCourse(courseInput: CourseInput!): Course!
         createGroup(name: String!, kind: String!): Group!
         addStudentToGroup(groupId: String!): String!
         removeStudentFromGroup: String!
